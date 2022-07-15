@@ -90,7 +90,7 @@ exp_ins.close()
 								<p>This function returns a new CSV file "insurance_ready.csv" which can be used for further analysis. There is no missing data in this dataset, so no further cleaning is required.</p>
 								<h2>Model Building in Octave</h2>
 								<p></p>
-								<pre>function prediction = insurance(file_name)
+								<pre><code>function prediction = insurance(file_name)
 
 %The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
 %%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
@@ -161,7 +161,7 @@ X_test = X_leftover;
 X_test([rs_lo],:) = [];
 %do the same for y_test
 y_test = y_leftover;
-y_test([rs_lo], :) = [];</pre>
+y_test([rs_lo], :) = [];</pre></code>
 							</section>
 
 					</div>
