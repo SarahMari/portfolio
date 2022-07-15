@@ -39,7 +39,8 @@
 exp_ins = open('insurance_ready.csv','w')
 
 def expand(insurance, exp_ins):
-    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,","is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
+    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,",
+    "is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
     insurance.readline()
     for line in insurance.readlines():
         new_values = []
@@ -85,8 +86,10 @@ expand(insurance, exp_ins)
 
 insurance.close()
 exp_ins.close()
-
 </pre>
+								<p>This function returns a new CSV file "insurance_ready.csv" which can be used for further analysis. There is no missing data in this dataset, so no further cleaning is required.</p>
+								<h2>Model Creating in Octave</h2>
+								<p></p>
 							</section>
 
 					</div>
