@@ -161,7 +161,7 @@ X_test([rs_lo],:) = [];
 %do the same for y_test
 y_test = y_leftover;
 y_test([rs_lo], :) = [];</pre></code>
-								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
+								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model using and trained the model using gradient descent. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
 								<pre><code>%test a linear function with no regularization
 
 init_theta = ones(n+1, 1);
