@@ -39,8 +39,7 @@
 exp_ins = open('insurance_ready.csv','w')
 
 def expand(insurance, exp_ins):
-    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,",
-    "is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
+    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,","is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
     insurance.readline()
     for line in insurance.readlines():
         new_values = []
@@ -187,7 +186,58 @@ predictions = X_cv * theta(2:end, :);
 MSE_cv = (sum((predictions - y_cv).^2)/cv_size)
 RMSE = sqrt(MSE_cv)
 n_RMSE_cv = RMSE/(max(y_cv)-min(y_cv))</pre></code>
-								<p>Since I fit the model to the training croup, I tested it out on the Cross Validation group. It resulted in a Normalized RMSE of ~.17. Next, I messed around with adding a regularization term as well as higher degree order polynomials. The regularization term helps address overfitting; adding a constant in front of each term means that the cost will increase by weighting the feature more heavily. This serves to prevent overfitting on the training group. Adding polynomial terms addressing the opposite: underfitting. Polynomial terms allow the model to more precisely fit the data. In the next steps, I test out various values for lambda (the regularization term) and t (the order of the polynomials).</p>
+								<p>Since I fit the model to the training group, I tested it out on the cross validation group. It resulted in a Normalized RMSE of ~.17. Next, I messed around with adding a regularization term as well as higher degree order polynomials. The regularization term helps address overfitting; adding a constant in front of each term means that the cost will increase by weighting the feature more heavily. This serves to prevent overfitting on the training group. Adding polynomial terms addressing the opposite: underfitting. Polynomial terms allow the model to more precisely fit the data. In the next steps, I test out various values for lambda (the regularization term) and t (the order of the polynomials).</p>
+								<pre><code>%vary the highest polynomial degree with this variable:
+p = 30;
+
+%insert proposed lambda values here:
+lam = [0, .0001, .0005, .001, .005 .01, .05, .1, .5, 1, 5];
+
+
+
+FX_train = [];
+FX_test = [];
+for t = 1:30
+  counter = 1;
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+  for lambda = lam
+    [J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, lambda);
+    [theta] = trainLinearReg( FX_train, y_train, lambda);
+    pred_train = FX_train * theta;
+    MSE_train = (sum((pred_train - y_train).^2)/train_size);
+    pred_test = FX_test* theta;
+    MSE_test = (sum((pred_test - y_test).^2)/test_size);
+    MSE_test_vector(t,counter) = MSE_test ;
+    MSE_train_vector(t, counter) = MSE_train;
+    lambda_matrix(t, counter) = lambda;
+    degree_matrix(t, counter) = t;
+    counter += 1;
+    endfor
+
+endfor
+MSE_train_vector;
+MSE_test_vector;
+%%%Make 3 matrices all the same size with the lambda and degree of each cost J
+
+surf(lambda_matrix,degree_matrix, MSE_train_vector)
+title("plot of training set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Mean squared error");
+surf(lambda_matrix,degree_matrix, MSE_test_vector)
+title("plot of test set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Mean squared error");
+
+%these plots show that there is generally a minimum around a 4th order polynomial and lmbda is
+%about equal to .1</pre></code>
+								<p></p>
 							</section>
 
 					</div>
