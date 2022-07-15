@@ -88,8 +88,80 @@ insurance.close()
 exp_ins.close()
 </pre>
 								<p>This function returns a new CSV file "insurance_ready.csv" which can be used for further analysis. There is no missing data in this dataset, so no further cleaning is required.</p>
-								<h2>Model Creating in Octave</h2>
+								<h2>Model Building in Octave</h2>
 								<p></p>
+								<pre>function prediction = insurance(file_name)
+
+%The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
+%%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
+
+
+%Read and load the data
+data = csvread(file_name);
+[a ,b] = size(data);
+%split into X and Y
+X = data(:,1:(b-1));
+y = data(:,b);
+%initialize helpful values
+[m, n] = size(X);
+
+%feature scaling brings all of the features onto similar scales, preventing features on a larger scale from being unnecessarily heavily weighted
+
+for i = 1:n
+  X(:,i) = X(:,i)./(max(X(:,i)));
+  endfor
+
+%mean normalization adjusts each feature value so that the mean value for each feature is 0
+
+for i = 1:n
+  X(:,i) = X(:,i)-mean(X(:,i));
+endfor
+
+% Add intercept term to X and X_test
+X = [ones(m, 1) X];
+
+%randomize training set
+
+%the size of the train, cv, and test will be 60%, 20%, and 20% of the data set examples, respectively
+train_size = round(m*.6);
+cv_size = round(m*.2);
+test_size = m - (cv_size +train_size);
+
+%I want to make this random because I don't know if this data is ordered in some way
+%so I don't want to just chose the fist 60% to be the training set
+%so I chose a random permutation of train_size numbers within the range of 0-m
+rand_sample = randperm(m, train_size);
+
+%set X_train and y_train to be these random examples
+X_train = X(rand_sample,:);
+y_train = y(rand_sample, :);
+
+%need to define a variable to be the leftover set of the remaining 40% of the data
+
+%name a new variable that contains X
+X_leftover = X;
+
+%remove the training examples
+X_leftover([rand_sample],:) = [];
+
+%do the same for y
+y_leftover = y;
+y_leftover([rand_sample],:) = [];
+
+%chose a random permutation of cv_size number of numbers within the range of
+%m- train_size, aka the leftover size
+rs_lo = randperm((m-train_size), cv_size);
+
+%define X_cv and y_cv as these random examples, chosen from the leftover set
+X_cv = X_leftover(rs_lo,:);
+y_cv = y_leftover(rs_lo, :);
+
+%set X_test as equal to the leftover set, then remove the examples chosen for X_cv
+X_test = X_leftover;
+X_test([rs_lo],:) = [];
+%do the same for y_test
+y_test = y_leftover;
+y_test([rs_lo], :) = [];</pre>
 							</section>
 
 					</div>
