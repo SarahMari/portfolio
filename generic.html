@@ -237,7 +237,37 @@ zlabel("Mean squared error");
 
 %these plots show that there is generally a minimum around a 4th order polynomial and lmbda is
 %about equal to .1</pre></code>
-								<p></p>
+								<p>I ran this a handful of times, following potential minimum RMSE values. I found that a 4th degree polynomial and regularization value of .1 resulted in the best fit for this data. I then tested this proposed model on my third section of the data, the test set. The reason for doing this is to make sure that I haven't overfit these new parameters to the cross-validation set, meaning that the degree of the polynomial and lambda value work best for the training set, but wouldn't actually generalize well. If this is the case, the RMSE would be significantly lower for the cross-validation set than the test set. If they RMSEs for the two groups are similar, then we hava a good indication that the model will preform just as well on new data sets as it does on the test set (given, of course, that the data I am using is a representative sample of the population). </p>
+								<pred><code>
+FX_train = [];
+FX_test = [];
+FX_cv = [];
+for t = 1:4
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  n_degree_cv = X_cv.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  FX_cv = [FX_cv n_degree_cv];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+
+
+[J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, .1);
+[theta] = trainLinearReg( FX_train, y_train, .1);
+pred_train = FX_train * theta;
+MSE_train = (sum((pred_train - y_train).^2)/train_size)
+pred_test = FX_test* theta;
+MSE_test = (sum((pred_test - y_test).^2)/test_size)
+pred_cv = FX_cv* theta;
+MSE_cv = (sum((pred_cv - y_cv).^2)/cv_size)
+
+%%They all are pretty similar, so this means we have found a good fit that will
+%%likely work just as well on new data
+<pred/></code>
+									<p>The MSREs calculated for each set was pretty similar, around ADD VALUE!!!!!!!!!!, so this is a good indication of how well this model will preform on new data.</p>
+									<h1>Conclusion and Next Steps</h1>
+									<p>The MSRE and NMSRE provide a way to compare different models to see which is a better fit, because they are a way of measuring the difference between the predicted and actual observed values. NMSRE values range from 0 to 1, where a 0 would mean that there was no difference between the predictions and observed values. The NMSRE value that I found is not particularly close to 0. In order to lower this value, a next possible step could be to try ignoring some of the features to see if some of them are actually hindering our fit. If this doesn't work, we could try to gather more data in order ot have a larger training set. Whether or not we would take these steps depends on how accurate this model needs to be. A NMRSE of INSERT VALUE HERE!!!!!!!!! may be satisfactory in some situations.<p/>
 							</section>
 
 					</div>
