@@ -162,7 +162,32 @@ X_test([rs_lo],:) = [];
 %do the same for y_test
 y_test = y_leftover;
 y_test([rs_lo], :) = [];</pre></code>
-								<p></p>
+								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
+								<pre><code>%test a linear function with no regularization
+
+init_theta = ones(n+1, 1);
+%J = 0;
+%X_grad = zeros(size(X));
+%Theta_grad = zeros(size(init_theta));
+
+%lambda
+%lambda = 40
+lambda= 0
+[J, grad] = linearRegCostFunction(X_train, y_train, init_theta, lambda);
+% Set Options
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+
+% Optimize using Rasmussen's fminunc
+[theta] = trainLinearReg([ones(train_size, 1) X_train], y_train, lambda);
+
+%apply this proposed theta to the cross-validation group
+predictions = X_cv * theta(2:end, :);
+
+%generate MeanSquared Error and Normalized Mean Squared Error to evaluate the prediction ability of this model
+MSE_cv = (sum((predictions - y_cv).^2)/cv_size)
+RMSE = sqrt(MSE_cv)
+n_RMSE_cv = RMSE/(max(y_cv)-min(y_cv))</pre></code>
+								<p>Since I fit the model to the training croup, I tested it out on the Cross Validation group. It resulted in a Normalized RMSE of ~.17. Next, I messed around with adding a regularization term as well as higher degree order polynomials. The regularization term helps address overfitting; adding a constant in front of each term means that the cost will increase by weighting the feature more heavily. This serves to prevent overfitting on the training group. Adding polynomial terms addressing the opposite: underfitting. Polynomial terms allow the model to more precisely fit the data. In the next steps, I test out various values for lambda (the regularization term) and t (the order of the polynomials).</p>
 							</section>
 
 					</div>
