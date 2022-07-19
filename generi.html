@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Predictive Modeling for Insurance Billing| Sarah Nagy</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>Predictive Modeling for Insurance Billing</h1>
+						<p>I used this data set to practice using gadient descent for multiple linear regression.</p>
+					</header>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="content" class="main">
+								<span class="image main"><img src="images/pic04.jpg" alt="" /></span>
+								<h2>Background and Goals</h2>
+								<p>This data used for this project contains the age, sex, B.M.I., number of children, smoking status, region of the U.S., and charges billed to insurance for one year. I approached this project with the goal of predicting insurance charges based on this information. This kind of predictive modeling is useful in every field. It is very powerful to be able to make predictions about consumers/clients based on information that is readily available to you. Of course, in this situation, an insurance company might like to know how much an individual is likely to bill insurance so that they can set their insurance rate at a level that maximizes profit. </p>
+								<p>I was hoping to practice machine learning techniques and data preprocessing. I used Python to preprocess the data and GNU Octave for the data analysis.</p>
+								<h2>Getting Started</h2>
+								<p>The first step was to process the categorical features into binary operators. In lieu of using pandas' get_dummy operator, I challenged myself to code this part from scratch. I hadn't been using Python very much lately and wanted to keep myself in practice. The following code transforms the smoking status (previously labeld as "yes" or "no") to a new vaiable "is_smoker" with a 1 or 0 label. It also transfroms the individuals region from "northeast," "northwest," "southeast," or "southwest" into four dummy variables: "is_northeast," "is_northwest", "is_southeast," "is_southwest." Each example in the data set will present with a 1 for the proper variable and 0s for the remaining three. This step allows each of the features to be mathematically manipulated.</p>
+								<p>The following is the code I used for this step:</p>
+								<pre><code>insurance = open('insurance.csv', 'r')
+exp_ins = open('insurance_ready.csv','w')
+
+def expand(insurance, exp_ins):
+    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,","is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
+    insurance.readline()
+    for line in insurance.readlines():
+        new_values = []
+        values = line.split(",")
+        new_values.append(str(values[0])+",")
+        if values[1] == 'male':
+            new_values.append("0,")
+            new_values.append("1,")
+        elif values[1] == 'female':
+            new_values.append("1,")
+            new_values.append("0,")
+        new_values.append(str(values[2])+",")
+        new_values.append(str(values[3])+",")
+        if values[4] == 'no':
+            new_values.append("0,")
+        elif values[4] == 'yes':
+            new_values.append("1,")
+        if values[5] == 'northeast':
+            new_values.append("1,")
+            new_values.append("0,")
+            new_values.append("0,")
+            new_values.append("0,")
+        elif values[5] == 'southeast':
+            new_values.append("0,")
+            new_values.append("1,")
+            new_values.append("0,")
+            new_values.append("0,")
+        elif values[5] == 'southwest':
+            new_values.append("0,")
+            new_values.append("0,")
+            new_values.append("1,")
+            new_values.append("0,")
+        elif values[5] == 'northwest':
+            new_values.append("0,")
+            new_values.append("0,")
+            new_values.append("0,")
+            new_values.append("1,")
+        new_values.append(str(values[6]))
+        exp_ins.writelines(new_values)
+
+
+expand(insurance, exp_ins)
+
+insurance.close()
+exp_ins.close()
+</pre></code>
+								<p>This function returns a new CSV file "insurance_ready.csv" which can be used for further analysis. There is no missing data in this dataset, so no further preprocessing is required.</p>
+								<h2>Model Building in Octave</h2>
+								<p>First, my function loads and stores the data. Then it spilts off the amount of charges billed to insurance column into a y-vector. Then I apply feature scaling and mean normalization, and randomly group the data into a training set(60%), test set(20%), and cross-validation set(20%).  Feature scaling and mean normalization help gradient descent converge more quickly, as well as help train a better model since features with larger scales won't be arbitrarily weighted more heavily. Random assigment to train, test, and cross validation groups allows me to train the model on the training set, optimize some parameters with the test set, and then test those parameters with the cross-validation set.</p>
+								<pre><code>function prediction = insurance(file_name)
+
+%The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
+%%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
+
+
+%Read and load the data
+data = csvread(file_name);
+[a ,b] = size(data);
+%split into X and Y
+X = data(:,1:(b-1));
+y = data(:,b);
+%initialize helpful values
+[m, n] = size(X);
+
+%feature scaling brings all of the features onto similar scales, preventing features on a larger scale from being unnecessarily heavily weighted
+
+for i = 1:n
+  X(:,i) = X(:,i)./(max(X(:,i)));
+  endfor
+
+%mean normalization adjusts each feature value so that the mean value for each feature is 0
+
+for i = 1:n
+  X(:,i) = X(:,i)-mean(X(:,i));
+endfor
+
+% Add intercept term to X and X_test
+X = [ones(m, 1) X];
+
+%randomize training set
+
+%the size of the train, cv, and test will be 60%, 20%, and 20% of the data set examples, respectively
+train_size = round(m*.6);
+cv_size = round(m*.2);
+test_size = m - (cv_size +train_size);
+
+%I want to make this random because I don't know if this data is ordered in some way
+%so I don't want to just chose the fist 60% to be the training set
+%so I chose a random permutation of train_size numbers within the range of 0-m
+rand_sample = randperm(m, train_size);
+
+%set X_train and y_train to be these random examples
+X_train = X(rand_sample,:);
+y_train = y(rand_sample, :);
+
+%need to define a variable to be the leftover set of the remaining 40% of the data
+
+%name a new variable that contains X
+X_leftover = X;
+
+%remove the training examples
+X_leftover([rand_sample],:) = [];
+
+%do the same for y
+y_leftover = y;
+y_leftover([rand_sample],:) = [];
+
+%chose a random permutation of cv_size number of numbers within the range of
+%m- train_size, aka the leftover size
+rs_lo = randperm((m-train_size), cv_size);
+
+%define X_cv and y_cv as these random examples, chosen from the leftover set
+X_cv = X_leftover(rs_lo,:);
+y_cv = y_leftover(rs_lo, :);
+
+%set X_test as equal to the leftover set, then remove the examples chosen for X_cv
+X_test = X_leftover;
+X_test([rs_lo],:) = [];
+%do the same for y_test
+y_test = y_leftover;
+y_test([rs_lo], :) = [];</pre></code>
+								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model using and trained the model using gradient descent. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
+								<pre><code>%test a linear function with no regularization
+
+init_theta = ones(n+1, 1);
+%J = 0;
+%X_grad = zeros(size(X));
+%Theta_grad = zeros(size(init_theta));
+
+%lambda
+%lambda = 40
+lambda= 0
+[J, grad] = linearRegCostFunction(X_train, y_train, init_theta, lambda);
+% Set Options
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+
+% Optimize using Rasmussen's fminunc
+[theta] = trainLinearReg([ones(train_size, 1) X_train], y_train, lambda);
+
+%apply this proposed theta to the cross-validation group
+predictions = X_cv * theta(2:end, :);
+
+%generate MeanSquared Error and Normalized Mean Squared Error to evaluate the prediction ability of this model
+MSE_cv = (sum((predictions - y_cv).^2)/cv_size)
+RMSE = sqrt(MSE_cv)
+n_RMSE_cv = RMSE/(max(y_cv)-min(y_cv))</pre></code>
+								<p>Since I fit the model to the training group, I tested it out on the cross validation group. It resulted in a Normalized RMSE of ~.17. Next, I investigated adding a regularization term as well as higher degree order polynomials. The regularization term helps address overfitting; adding a constant in front of each term means that the cost will increase by weighting the feature more heavily. This serves to prevent overfitting on the training group. Adding polynomial terms addressing the opposite: underfitting. Polynomial terms allow the model to more precisely fit the data. In the next steps, I test out various values for lambda (the regularization term) and t (the order of the polynomials).</p>
+								<pre><code>%vary the highest polynomial degree with this variable:
+p = 30;
+
+%insert proposed lambda values here:
+lam = [0, .0001, .0005, .001, .005 .01, .05, .1, .5, 1, 5];
+
+
+
+FX_train = [];
+FX_test = [];
+for t = 1:30
+  counter = 1;
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+  for lambda = lam
+    [J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, lambda);
+    [theta] = trainLinearReg( FX_train, y_train, lambda);
+    pred_train = FX_train * theta;
+    MSE_train = (sum((pred_train - y_train).^2)/train_size);
+    pred_test = FX_test* theta;
+    MSE_test = (sum((pred_test - y_test).^2)/test_size);
+    MSE_test_vector(t,counter) = MSE_test ;
+    MSE_train_vector(t, counter) = MSE_train;
+    lambda_matrix(t, counter) = lambda;
+    degree_matrix(t, counter) = t;
+    counter += 1;
+    endfor
+
+endfor
+MSE_train_vector;
+MSE_test_vector;
+%%%Make 3 matrices all the same size with the lambda and degree of each cost J
+
+surf(lambda_matrix,degree_matrix, MSE_train_vector)
+title("plot of training set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Mean squared error");
+surf(lambda_matrix,degree_matrix, MSE_test_vector)
+title("plot of test set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Mean squared error");
+</pre></code>
+								<p>I ran this a handful of times, following potential minimum RMSE values. I found that a 4th degree polynomial and regularization value of .1 resulted in the best fit for this data. I then tested this proposed model on my third section of the data, the test set. The reason for doing this is to make sure that I haven't overfit these new parameters to the cross-validation set, meaning that the degree of the polynomial and lambda value work best for the training set, but wouldn't actually generalize well. If this is the case, the RMSE would be significantly lower for the cross-validation set than the test set. If they RMSEs for the two groups are similar, then we hava a good indication that the model will preform just as well on new data sets as it does on the test set (given, of course, that the data I am using is a representative sample of the population). </p>
+								<pre><code>FX_train = [];
+FX_test = [];
+FX_cv = [];
+for t = 1:4
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  n_degree_cv = X_cv.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  FX_cv = [FX_cv n_degree_cv];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+
+
+[J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, .1);
+[theta] = trainLinearReg( FX_train, y_train, .1);
+pred_train = FX_train * theta;
+MSE_train = (sum((pred_train - y_train).^2)/train_size)
+pred_test = FX_test* theta;
+MSE_test = (sum((pred_test - y_test).^2)/test_size)
+pred_cv = FX_cv* theta;
+MSE_cv = (sum((pred_cv - y_cv).^2)/cv_size)
+
+%%They all are pretty similar, so this means we have found a good fit that will
+%%likely work just as well on new data
+</pre></code>
+									<p>The MSREs calculated for each set was pretty similar, around ADD VALUE!!!!!!!!!!, so this is a good indication of how well this model will preform on new data.</p>
+									<h2>Conclusion and Next Steps</h2>
+									<p>The MSRE and NMSRE provide a way to compare different models to see which is a better fit, because they are a way of measuring the difference between the predicted and actual observed values. NMSRE values range from 0 to 1, where a 0 would mean that there was no difference between the predictions and observed values. The NMSRE value that I found is not particularly close to 0. In order to lower this value, a next possible step could be to try ignoring some of the features to see if some of them are actually hindering our fit. If this doesn't work, we could try to gather more data in order ot have a larger training set. Whether or not we would take these steps depends on how accurate this model needs to be. A NMRSE of INSERT VALUE HERE!!!!!!!!! may be satisfactory in some situations.</p>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Aliquam sed mauris</h2>
+							<p>Sed lorem ipsum dolor sit amet et nullam consequat feugiat consequat magna adipiscing tempus etiam dolore veroeros. eget dapibus mauris. Cras aliquet, nisl ut viverra sollicitudin, ligula erat egestas velit, vitae tincidunt odio.</p>
+							<ul class="actions">
+								<li><a href="#" class="button">Learn More</a></li>
+							</ul>
+						</section>
+						<section>
+							<h2>Etiam feugiat</h2>
+							<dl class="alt">
+								<dt>Location</dt>
+								<dd>Bozeman, MT 59715 &bull; USA</dd>
+								<dt>Email</dt>
+								<dd><a href="#">snsarahmarienagy@gmail.com</a></dd>
+							</dl>
+							<ul class="icons">
+								<li><a href="https://github.com/SarahMari" class="icon brands fa-github alt"><span class="label">GitHub</span></a></li>
+								<li><a href="#" class="icon brands fa-dribbble alt"><span class="label">Dribbble</span></a></li>
+							</ul>
+						</section>
+						<p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
