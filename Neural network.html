@@ -31,7 +31,7 @@
 								<h2>Motivations</h2>
 								<p>Neural network algorithms mimic neural networks in the brain in order to learn deep pattern recognition. They take an input layer of training examples, run them through a series of hidden layers which transform the data, and then are translated back out into an output layer, which is the predictions of the model.</p>
 								<p>For this project, I constructed a neural network to read greyscale images of single digit numbers in different fonts and return the predicted value. I used a fairly simple nueral network with in input layer, two hidden layers, and an output layer. This is a classification model with 10 classification groups (the numbers 0-9) which will output a matrix containing the predicted probability that the input image was each of the classification options. </p> 
-								<p>First I calculated the cost and the gradient. I used a sigmoid function that I constructed which applies the sigmoid function to the input.</p>
+								<p>First I wrote out a function to calculate the cost of the model. I used a sigmoid function that I constructed which applies the sigmoid function to the input.</p>
 								<code><pre>z_2 = [ones(m, 1) X] *Theta1'; %[5000x401]*[401x25]
 
 a_2 = g_z_2 = sigmoid(z_2);
@@ -56,6 +56,7 @@ J = (1/m) * sum(sum((-ym.*log(a_3))-[(1-ym).*log(1 - a_3)]));
 
 reg = [lambda/(2*m)] * [sum(sum(Theta1(:,2:end).^2)) + sum(sum(Theta2(:,2:end).^2))];
 J = J + reg;</pre></code>
+								<p>After computing the cost, I implemented a backpropagation algorithm to compute the gradients for each of the hidden layers.</p>
 								<h2>Tempus veroeros</h2>
 								<p>Cep risus aliquam gravida cep ut lacus amet. Adipiscing faucibus nunc placerat. Tempus adipiscing turpis non blandit accumsan eget lacinia nunc integer interdum amet aliquam ut orci non col ut ut praesent. Semper amet interdum mi. Phasellus enim laoreet ac ac commodo faucibus faucibus. Curae ante vestibulum ante. Blandit. Ante accumsan nisi eu placerat gravida placerat adipiscing in risus fusce vitae ac mi accumsan nunc in accumsan tempor blandit aliquet aliquet lobortis. Ultricies blandit lobortis praesent turpis. Adipiscing accumsan adipiscing adipiscing ac lacinia cep. Orci blandit a iaculis adipiscing ac. Vivamus ornare laoreet odio vis praesent nunc lorem mi. Erat. Tempus sem faucibus ac id. Vis in blandit. Nascetur ultricies blandit ac. Arcu aliquam. Accumsan mi eget adipiscing nulla. Non vestibulum ac interdum condimentum semper commodo massa arcu.</p>
 							</section>
