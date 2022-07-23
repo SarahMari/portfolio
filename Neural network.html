@@ -32,7 +32,7 @@
 								<p>Neural network algorithms mimic neural networks in the brain in order to learn deep pattern recognition. They take an input layer of training examples, run them through a series of hidden layers which transform the data, and then are translated back out into an output layer, which is the predictions of the model.</p>
 								<h2>Application</h2>
 								<p>For this project, I constructed a neural network to read greyscale images of single digit numbers in different fonts and return the predicted value. I used a fairly simple nueral network with in input layer, two hidden layers, and an output layer. This is a classification model with 10 classification groups (the numbers 0-9) which will output a matrix containing the predicted probability that the input image was each of the classification options. </p> 
-								<p>First I wrote out a function to calculate the cost of the model. This is the feedforward step of the model. I used a sigmoid function that I constructed which applies the sigmoid function to the input.</p>
+								<p>First I wrote out a function to calculate the cost of the model. This is the feedforward step of the model. I used a sigmoid function that I constructed which applies the sigmoid function to the input. Before implementing this step, I also set random values to intialize the hidden layers, and unrolled them into vectors.</p>
 								<pre><code>z_2 = [ones(m, 1) X] *Theta1'; 
 
 a_2 = g_z_2 = sigmoid(z_2);
@@ -98,8 +98,8 @@ Theta1_grad = Theta1_grad + reg_1;
 reg_2 = (lambda/m)*[zeros(k,1) Theta2(:,2:end)];
 
 Theta2_grad = Theta2_grad + reg_2;</pre></code>
-								<h2>Tempus veroeros</h2>
-								<p>Cep risus aliquam gravida cep ut lacus amet. Adipiscing faucibus nunc placerat. Tempus adipiscing turpis non blandit accumsan eget lacinia nunc integer interdum amet aliquam ut orci non col ut ut praesent. Semper amet interdum mi. Phasellus enim laoreet ac ac commodo faucibus faucibus. Curae ante vestibulum ante. Blandit. Ante accumsan nisi eu placerat gravida placerat adipiscing in risus fusce vitae ac mi accumsan nunc in accumsan tempor blandit aliquet aliquet lobortis. Ultricies blandit lobortis praesent turpis. Adipiscing accumsan adipiscing adipiscing ac lacinia cep. Orci blandit a iaculis adipiscing ac. Vivamus ornare laoreet odio vis praesent nunc lorem mi. Erat. Tempus sem faucibus ac id. Vis in blandit. Nascetur ultricies blandit ac. Arcu aliquam. Accumsan mi eget adipiscing nulla. Non vestibulum ac interdum condimentum semper commodo massa arcu.</p>
+								<h2>Testing the Model</h2>
+								<p>After acquiring the proposed model, applied it to my test set data. The model was able to predict the image with</p>
 							</section>
 
 					</div>
