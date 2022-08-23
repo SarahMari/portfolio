@@ -78,106 +78,13 @@ get_ready(surv, new)
 surv.close()
 new.close()
 </pre></code>
-								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model using and trained the model using gradient descent. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
-								<pre><code>%test a linear function with no regularization
-
-init_theta = ones(n+1, 1);
-%J = 0;
-%X_grad = zeros(size(X));
-%Theta_grad = zeros(size(init_theta));
-
-%lambda
-%lambda = 40
-lambda= 0
-[J, grad] = linearRegCostFunction(X_train, y_train, init_theta, lambda);
-% Set Options
-options = optimset('GradObj', 'on', 'MaxIter', 400);
-
-% Optimize using Rasmussen's fminunc
-[theta] = trainLinearReg([ones(train_size, 1) X_train], y_train, lambda);
-
-%apply this proposed theta to the cross-validation group
-predictions = X_cv * theta(2:end, :);
-
-%generate MeanSquared Error and Normalized Mean Squared Error to evaluate the prediction ability of this model
-MSE_cv = (sum((predictions - y_cv).^2)/cv_size)
-RMSE = sqrt(MSE_cv)
-n_RMSE_cv = RMSE/(max(y_cv)-min(y_cv))</pre></code>
-								<p>Since I fit the model to the training group, I tested it out on the cross validation group. It resulted in a Normalized RMSE of ~.17. Next, I investigated adding a regularization term as well as higher degree order polynomials. The regularization term helps address overfitting; adding a constant in front of each term means that the cost will increase by weighting the feature more heavily. This serves to prevent overfitting on the training group. Adding polynomial terms addressing the opposite: underfitting. Polynomial terms allow the model to more precisely fit the data. In the next steps, I test out various values for lambda (the regularization term) and t (the order of the polynomials).</p>
-								<pre><code>%vary the highest polynomial degree with this variable:
-p = 30;
-
-%insert proposed lambda values here:
-lam = [0, .0001, .0005, .001, .005 .01, .05, .1, .5, 1, 5];
-
-
-
-FX_train = [];
-FX_test = [];
-for t = 1:30
-  counter = 1;
-  n_degree_train = X_train.^t;
-  n_degree_test = X_test.^t;
-  FX_train = [FX_train n_degree_train];
-  FX_test = [FX_test n_degree_test];
-  [m , n] = size(FX_train);
-  init_theta = ones(n, 1);
-  for lambda = lam
-    [J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, lambda);
-    [theta] = trainLinearReg( FX_train, y_train, lambda);
-    pred_train = FX_train * theta;
-    MSE_train = (sum((pred_train - y_train).^2)/train_size);
-    pred_test = FX_test* theta;
-    MSE_test = (sum((pred_test - y_test).^2)/test_size);
-    MSE_test_vector(t,counter) = MSE_test ;
-    MSE_train_vector(t, counter) = MSE_train;
-    lambda_matrix(t, counter) = lambda;
-    degree_matrix(t, counter) = t;
-    counter += 1;
-    endfor
-
-endfor
-MSE_train_vector;
-MSE_test_vector;
-%%%Make 3 matrices all the same size with the lambda and degree of each cost J
-
-surf(lambda_matrix,degree_matrix, MSE_train_vector)
-title("plot of training set");
-xlabel("lambda");
-ylabel("degree of polynomial");
-zlabel("Mean squared error");
-surf(lambda_matrix,degree_matrix, MSE_test_vector)
-title("plot of test set");
-xlabel("lambda");
-ylabel("degree of polynomial");
-zlabel("Mean squared error");
-</pre></code>
-								<p>I ran this a handful of times, following potential minimum RMSE values. I found that a 4th degree polynomial and regularization value of .1 resulted in the best fit for this data. I then tested this proposed model on my third section of the data, the test set. The reason for doing this is to make sure that I haven't overfit these new parameters to the cross-validation set, meaning that the degree of the polynomial and lambda value work best for the training set, but wouldn't actually generalize well. If this is the case, the RMSE would be significantly lower for the cross-validation set than the test set. If they RMSEs for the two groups are similar, then we hava a good indication that the model will preform just as well on new data sets as it does on the test set (given, of course, that the data I am using is a representative sample of the population). </p>
-								<pre><code>FX_train = [];
-FX_test = [];
-FX_cv = [];
-for t = 1:4
-  n_degree_train = X_train.^t;
-  n_degree_test = X_test.^t;
-  n_degree_cv = X_cv.^t;
-  FX_train = [FX_train n_degree_train];
-  FX_test = [FX_test n_degree_test];
-  FX_cv = [FX_cv n_degree_cv];
-  [m , n] = size(FX_train);
-  init_theta = ones(n, 1);
-
-
-[J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, .1);
-[theta] = trainLinearReg( FX_train, y_train, .1);
-pred_train = FX_train * theta;
-MSE_train = (sum((pred_train - y_train).^2)/train_size)
-pred_test = FX_test* theta;
-MSE_test = (sum((pred_test - y_test).^2)/test_size)
-pred_cv = FX_cv* theta;
-MSE_cv = (sum((pred_cv - y_cv).^2)/cv_size)
-
-%%They all are pretty similar, so this means we have found a good fit that will
-%%likely work just as well on new data
+								<p>Now that I had all of the data in a useable form, I looked at missing data and associated statistucs. I moved over to RStudio to take advantage of some of its great built in functions. Using the summary function, I found that both age and embarkment location had missing data. I decided to replace the missing age data with the median age- 28 years old. I chose the median because it is more resistant to outliers than mean. I decided to replace missing embarkment location values with the most commonly occuring embarkment location- Southampton. I used the following code to take care of the missing data problem.</p>
+								<pre><code>train$age[is.na(train$age)]<- 28
+train$emb_is_Q[is.na(train$emb_is_Q)] <- 0
+train$emb_is_C[is.na(train$emb_is_C)] <- 0
+train$emb_is_S[is.na(train$emb_is_S)] <- 1</pre></code>
+								<p>I ran R's summary function again for another check and found there was no missing data and that each variable was in a quantitative form. Next I moved over to GNU Octave for the proper anlysis. I spit up my given "training data" into its own training and test set so that I could test my own model before submitting it to Kaggle. I then applied mean normalization and feature scaling in order to give each of the features equal weighting to improve my model.  </p>
+								<pre><code>
 </pre></code>
 									<p>The MSREs calculated for each set was pretty similar, around ADD VALUE!!!!!!!!!!, so this is a good indication of how well this model will preform on new data.</p>
 									<h2>Conclusion and Next Steps</h2>
