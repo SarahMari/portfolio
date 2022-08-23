@@ -31,134 +31,53 @@
 								<h2>Background and Goals</h2>
 								<p>To practice data cleaning and logistic regression for predictive modeling, I participated in Kaggle's popular Titanic Survivor Prediction competition. The premise is to predict whether passengers survived based on a data set containing passenger's names, ages, genders, number of family members aboard the ship, ticket class, ticket I.D., fare paid, and location of embarkment. Kaggle provides a large training set including survival information and a smaller test set to submit back to Kaggle with your predictions. This project required me to clean the data by finding appropriate replacements for missing data, and transforming categorical variables into binary operators. I also practiced randomizing the training set to get a smaller trainging and set set from my given data, applying logistic regression, and analyzing the results. I used Python for the data cleaning and R for the data analysis.</p>
 								<h2>Getting Started</h2>
-								<p>The first step was to process the categorical features into binary operators. In lieu of using pandas' get_dummy operator, I challenged myself to code this part from scratch. I hadn't been using Python very much lately and wanted to keep myself in practice. The following code transforms the smoking status (previously labeld as "yes" or "no") to a new vaiable "is_smoker" with a 1 or 0 label. It also transfroms the individuals region from "northeast," "northwest," "southeast," or "southwest" into four dummy variables: "is_northeast," "is_northwest", "is_southeast," "is_southwest." Each example in the data set will present with a 1 for the proper variable and 0s for the remaining three. This step allows each of the features to be mathematically manipulated.</p>
+								<p>First I did some exploratory analysis on this data and found that there were missing values in the age and embarkment location categories. I also found that sex and embarkment location were non-numerical categorical variables. First I  to find missing values and information about the categories with missing values. I found that there were missing values in age, </p>								
 								<p>The following is the code I used for this step:</p>
-								<pre><code>insurance = open('insurance.csv', 'r')
-exp_ins = open('insurance_ready.csv','w')
+								<pre><code>surv = open('test.csv','r')
+new = open('test_ready.csv', 'w')
 
-def expand(insurance, exp_ins):
-    exp_ins.writelines(["age,","is_female,","is_male,","bmi,","number_children,","is_smoker,","is_northeast,","is_southeast,","is_southwest,","is_northwest,","charges\n"])
-    insurance.readline()
-    for line in insurance.readlines():
+def get_ready(surv, new):
+    new.writelines(['Pclass,','is_female,','is_male,','age,','SibSp,','Parch,','Fare,','emb_is_Q,','emb_is_S,','emb_is_C,','Survived\n'])
+    surv.readline()
+    for line in surv.readlines():
         new_values = []
         values = line.split(",")
-        new_values.append(str(values[0])+",")
-        if values[1] == 'male':
-            new_values.append("0,")
-            new_values.append("1,")
-        elif values[1] == 'female':
-            new_values.append("1,")
-            new_values.append("0,")
         new_values.append(str(values[2])+",")
-        new_values.append(str(values[3])+",")
-        if values[4] == 'no':
-            new_values.append("0,")
-        elif values[4] == 'yes':
-            new_values.append("1,")
-        if values[5] == 'northeast':
+        if values[5] == 'female':
             new_values.append("1,")
             new_values.append("0,")
+        elif values[5] == 'male':
             new_values.append("0,")
-            new_values.append("0,")
-        elif values[5] == 'southeast':
-            new_values.append("0,")
+            new_values.append("1,")
+        else:
+            new_values.append(",")
+        new_values.append(str(values[6])+",")
+        new_values.append(str(values[7])+",")
+        new_values.append(str(values[8])+",")
+        new_values.append(str(values[10])+",")
+        if values[12] == 'Q\n':
             new_values.append("1,")
             new_values.append("0,")
             new_values.append("0,")
-        elif values[5] == 'southwest':
+        elif values[12] == 'S\n':
+            new_values.append("0,")
+            new_values.append("1,")
+            new_values.append("0,")
+        elif values[12] == 'C\n':
             new_values.append("0,")
             new_values.append("0,")
             new_values.append("1,")
-            new_values.append("0,")
-        elif values[5] == 'northwest':
-            new_values.append("0,")
-            new_values.append("0,")
-            new_values.append("0,")
-            new_values.append("1,")
-        new_values.append(str(values[6]))
-        exp_ins.writelines(new_values)
+        else:
+            new_values.append(",")
+            new_values.append(",")
+            new_values.append(",")
+        new_values.append(str(values[1])+"\n")
+        new.writelines(new_values)
+get_ready(surv, new)
 
-
-expand(insurance, exp_ins)
-
-insurance.close()
-exp_ins.close()
+surv.close()
+new.close()
 </pre></code>
-								<p>This function returns a new CSV file "insurance_ready.csv" which can be used for further analysis. There is no missing data in this dataset, so no further preprocessing is required.</p>
-								<h2>Model Building in Octave</h2>
-								<p>First, my function loads and stores the data. Then it spilts off the amount of charges billed to insurance column into a y-vector. Then I apply feature scaling and mean normalization, and randomly group the data into a training set(60%), test set(20%), and cross-validation set(20%).  Feature scaling and mean normalization help gradient descent converge more quickly, as well as help train a better model since features with larger scales won't be arbitrarily weighted more heavily. Random assigment to train, test, and cross validation groups allows me to train the model on the training set, optimize some parameters with the test set, and then test those parameters with the cross-validation set.</p>
-								<pre><code>function prediction = insurance(file_name)
-
-%The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
-%%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
-
-
-%Read and load the data
-data = csvread(file_name);
-[a ,b] = size(data);
-%split into X and Y
-X = data(:,1:(b-1));
-y = data(:,b);
-%initialize helpful values
-[m, n] = size(X);
-
-%feature scaling brings all of the features onto similar scales, preventing features on a larger scale from being unnecessarily heavily weighted
-
-for i = 1:n
-  X(:,i) = X(:,i)./(max(X(:,i)));
-  endfor
-
-%mean normalization adjusts each feature value so that the mean value for each feature is 0
-
-for i = 1:n
-  X(:,i) = X(:,i)-mean(X(:,i));
-endfor
-
-% Add intercept term to X and X_test
-X = [ones(m, 1) X];
-
-%randomize training set
-
-%the size of the train, cv, and test will be 60%, 20%, and 20% of the data set examples, respectively
-train_size = round(m*.6);
-cv_size = round(m*.2);
-test_size = m - (cv_size +train_size);
-
-%I want to make this random because I don't know if this data is ordered in some way
-%so I don't want to just chose the fist 60% to be the training set
-%so I chose a random permutation of train_size numbers within the range of 0-m
-rand_sample = randperm(m, train_size);
-
-%set X_train and y_train to be these random examples
-X_train = X(rand_sample,:);
-y_train = y(rand_sample, :);
-
-%need to define a variable to be the leftover set of the remaining 40% of the data
-
-%name a new variable that contains X
-X_leftover = X;
-
-%remove the training examples
-X_leftover([rand_sample],:) = [];
-
-%do the same for y
-y_leftover = y;
-y_leftover([rand_sample],:) = [];
-
-%chose a random permutation of cv_size number of numbers within the range of
-%m- train_size, aka the leftover size
-rs_lo = randperm((m-train_size), cv_size);
-
-%define X_cv and y_cv as these random examples, chosen from the leftover set
-X_cv = X_leftover(rs_lo,:);
-y_cv = y_leftover(rs_lo, :);
-
-%set X_test as equal to the leftover set, then remove the examples chosen for X_cv
-X_test = X_leftover;
-X_test([rs_lo],:) = [];
-%do the same for y_test
-y_test = y_leftover;
-y_test([rs_lo], :) = [];</pre></code>
 								<p>With the data is split up, I tested out a simple linear function with no regularization. I used the great fmincg function designed by Carl Rasmussen to minimize the cost function of the proposed model using and trained the model using gradient descent. Then I evaluated the model with the Root Mean Squared Error and normalized RMSE.</p>
 								<pre><code>%test a linear function with no regularization
 
