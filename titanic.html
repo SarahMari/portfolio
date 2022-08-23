@@ -78,7 +78,7 @@ get_ready(surv, new)
 surv.close()
 new.close()
 </pre></code>
-								<p>Now that I had all of the data in a useable form, I looked at missing data and associated statistucs. I moved over to RStudio to take advantage of some of its great built in functions. Using the summary function, I found that both age and embarkment location had missing data. I decided to replace the missing age data with the median age- 28 years old. I chose the median because it is more resistant to outliers than mean. I decided to replace missing embarkment location values with the most commonly occuring embarkment location- Southampton. I used the following code to take care of the missing data problem.</p>
+								<p>Now that I had all of the data in a useable form, I looked at missing data and associated statistics. I moved over to RStudio to take advantage of some of its great built in functions. Using the summary function, I found that both age and embarkment location had missing data. I decided to replace the missing age data with the median age- 28 years old. I chose the median because it is more resistant to outliers than mean. I decided to replace missing embarkment location values with the most commonly occuring embarkment location- Southampton. I used the following code to take care of the missing data problem.</p>
 								<pre><code>train$age[is.na(train$age)]<- 28
 train$emb_is_Q[is.na(train$emb_is_Q)] <- 0
 train$emb_is_C[is.na(train$emb_is_C)] <- 0
