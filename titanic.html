@@ -83,8 +83,208 @@ new.close()
 train$emb_is_Q[is.na(train$emb_is_Q)] <- 0
 train$emb_is_C[is.na(train$emb_is_C)] <- 0
 train$emb_is_S[is.na(train$emb_is_S)] <- 1</pre></code>
-								<p>I ran R's summary function again for another check and found there was no missing data and that each variable was in a quantitative form. Next I moved over to GNU Octave for the proper anlysis. I spit up my given "training data" into its own training and test set so that I could test my own model before submitting it to Kaggle. I then applied mean normalization and feature scaling in order to give each of the features equal weighting to improve my model.  </p>
+								<p>I ran R's summary function again for another check and found there was no missing data and that each variable was in a quantitative form. Next I moved over to GNU Octave for the proper anlysis. First, my function loads and stores the data. Then it spilts off the survival data column into a y-vector. Then I apply feature scaling and mean normalization, and randomly group the data into a training set(60%), test set(20%), and cross-validation set(20%). Feature scaling and mean normalization help gradient descent converge more quickly, as well as help train a better model since features with larger scales won't be arbitrarily weighted more heavily. Random assigment to train, test, and cross validation groups allows me to train the model on the training set, optimize some parameters with the test set, and then test those parameters with the cross-validation set</p>
 								<pre><code>
+								function [theta accuracy_test] = titanic(file_name)
+
+%The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
+%%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
+
+
+%Read and load the data
+data = csvread(file_name);
+[a ,b] = size(data);
+%split into X and Y
+X = data(:,1:(b-1));
+y = data(:,b);
+%initialize helpful values
+[m, n] = size(X);
+
+%feature scaling brings all of the features onto similar scales, preventing features on a larger scale from being unnecessarily heavily weighted
+
+for i = 1:n
+  X(:,i) = X(:,i)./(max(X(:,i)));
+  endfor
+
+%mean normalization adjusts each feature value so that the mean value for each feature is 0
+
+for i = 1:n
+  X(:,i) = X(:,i)-mean(X(:,i));
+endfor
+
+% Add intercept term to X and X_test
+X = [ones(m, 1) X];
+
+X(1:5,:);
+
+%randomize training set
+
+%the size of the train, cv, and test will be 60%, 20%, and 20% of the data set examples, respectively
+train_size = round(m*.6);
+cv_size = round(m*.2);
+test_size = m - (cv_size +train_size);
+
+%I want to make this random because I don't know if this data is ordered in some way
+%so I don't want to just chose the fist 60% to be the training set
+%so I chose a random permutation of train_size numbers within the range of 0-m
+rand_sample = randperm(m, train_size);
+
+%set X_train and y_train to be these random examples
+X_train = X(rand_sample,:);
+y_train = y(rand_sample, :);
+
+%need to define a variable to be the leftover set of the remaining 40% of the data
+
+%name a new variable that contains X
+X_leftover = X;
+
+%remove the training examples
+X_leftover([rand_sample],:) = [];
+
+%do the same for y
+y_leftover = y;
+y_leftover([rand_sample],:) = [];
+
+%chose a random permutation of cv_size number of numbers within the range of
+%m- train_size, aka the leftover size
+rs_lo = randperm((m-train_size), cv_size);
+
+%define X_cv and y_cv as these random examples, chosen from the leftover set
+X_cv = X_leftover(rs_lo,:);
+y_cv = y_leftover(rs_lo, :);
+
+%set X_test as equal to the leftover set, then remove the examples chosen for X_cv
+X_test = X_leftover;
+X_test([rs_lo],:) = [];
+%do the same for y_test
+y_test = y_leftover;
+y_test([rs_lo], :) = [];
+
+%test a linear function with no regularization
+
+init_theta = ones(n+1, 1);
+%J = 0;
+%X_grad = zeros(size(X));
+%Theta_grad = zeros(size(init_theta));
+
+%lambda
+%lambda = 40
+lambda= 0
+[J, grad] = linearRegCostFunction(X_train, y_train, init_theta, lambda);
+% Set Options
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+
+% Optimize using Rasmussen's fminunc
+[theta] = trainLinearReg([ones(train_size, 1) X_train], y_train, lambda);
+
+%apply this proposed theta to the cross-validation group
+predictions = X_cv * theta(2:end, :);
+%predictions = X * theta(2:end, :);
+predictions(1:15)
+r_p = round(predictions);
+r_p(1:15)
+l_p = predictions;
+for i = 1:cv_size
+    if l_p(i) >= .5;
+      l_p(i) = 1;
+    else
+      l_p(i) = 0;
+    endif
+    endfor
+
+l_p(1:15)
+sum(l_p != r_p)
+%accuracy = mean(y_cv == predictions)
+
+%immediately we get an %80 accuracy. Investigate how changing lambda and degree will imrpove it
+
+%vary the highest polynomial degree with this variable:
+p = 30;
+
+%insert proposed lambda values here:
+lam = [0, .0001, .0003, .0005, .0008, .001, .003,.005, .008 .01, ];
+
+
+
+FX_train = [];
+FX_test = [];
+for t = 1:30
+  counter = 1;
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+  for lambda = lam
+    [J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, lambda);
+    [theta] = trainLinearReg( FX_train, y_train, lambda);
+    pred_train = FX_train * theta;
+    %I'm going to try minimizing the cost this time instead of the accuracy even though they should be v correlated
+    [J_train, grad] = linearRegCostFunction(FX_train, y_train, theta, lambda);
+    J_train_vector(t,counter) = J_train ;
+    [J_test, grad] = linearRegCostFunction(FX_test, y_test, theta, lambda);
+    J_test_vector(t, counter) = J_test;
+    lambda_matrix(t, counter) = lambda;
+    degree_matrix(t, counter) = t;
+    counter += 1;
+    endfor
+
+endfor
+%MSE_train_vector;
+%MSE_test_vector;
+%%%Make 3 matrices all the same size with the lambda and degree of each cost J
+
+surf(lambda_matrix,degree_matrix, J_train_vector)
+title("plot of training set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Cost(J)");
+surf(lambda_matrix,degree_matrix, J_test_vector)
+title("plot of test set");
+xlabel("lambda");
+ylabel("degree of polynomial");
+zlabel("Cost(J)");
+
+%these plots show that there is generally a minimum around a 5th order polynomial and lmbda is
+%about equal to .0001
+
+%finally I will run that NMSE equation on each of the sets, including the CV, to make
+%that the choices made using the test set provide good predictors for the cross validation set
+
+
+
+FX_train = [];
+FX_test = [];
+FX_cv = [];
+for t = 1:5
+  n_degree_train = X_train.^t;
+  n_degree_test = X_test.^t;
+  n_degree_cv = X_cv.^t;
+  FX_train = [FX_train n_degree_train];
+  FX_test = [FX_test n_degree_test];
+  FX_cv = [FX_cv n_degree_cv];
+  [m , n] = size(FX_train);
+  init_theta = ones(n, 1);
+  endfor
+
+[J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, .1);
+[theta] = trainLinearReg( FX_train, y_train, .1);
+pred_train = round(FX_train * theta);
+accuracy_train = mean(pred_train == y_train)
+pred_test = round(FX_test* theta);
+accuracy_test = mean(pred_test == y_test)
+pred_cv = round(FX_cv* theta);
+accuracy_cv = mean(pred_cv == y_cv)
+
+pred_cv(1:20)
+%%They all are pretty similar, so this means we have found a good fit that will
+%%likely work just as well on new data
+
+%%to do:
+%% do data viz for the original data
+end
+
 </pre></code>
 									<p>The MSREs calculated for each set was pretty similar, around ADD VALUE!!!!!!!!!!, so this is a good indication of how well this model will preform on new data.</p>
 									<h2>Conclusion and Next Steps</h2>
