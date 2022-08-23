@@ -87,7 +87,7 @@ train$emb_is_S[is.na(train$emb_is_S)] <- 1</pre></code>
 								<pre><code>
 								function [theta accuracy_test] = titanic(file_name)
 
-%The goal of this program is to take the insurance data that I pre-processed and find a function that can accruately predict insurance charges on new data.
+%The goal of this program is to take the titanic survival data that I pre-processed and find a function that can accruately predict survival on new data.
 %%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
 
 
@@ -276,13 +276,6 @@ pred_test = round(FX_test* theta);
 accuracy_test = mean(pred_test == y_test)
 pred_cv = round(FX_cv* theta);
 accuracy_cv = mean(pred_cv == y_cv)
-
-pred_cv(1:20)
-%%They all are pretty similar, so this means we have found a good fit that will
-%%likely work just as well on new data
-
-%%to do:
-%% do data viz for the original data
 end
 
 </pre></code>
