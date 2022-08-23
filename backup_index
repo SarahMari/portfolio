@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Sarah Nagy | Data Scientist</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header" class="alt">
+						<span class="logo"><img src="images/logo.svg" alt="" /></span>
+						<h1>Sarah Nagy | Data Science Projects and Blog</h1>
+						<p>Welcome to my portfolio! I am a data scientist specializing in machine learning. Please take a look around!<br />
+						</p>
+					</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active">Predictive Modeling- Multiple Linear Regression</a></li>
+							<li><a href="#first">Principle Component Analysis</a></li>
+							<li><a href="#second">Neural Networks</a></li>
+							<li><a href="#cta">Predictive Modeling- Logistic Regression</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Predictive Modeling -->
+							<section id="intro" class="main">
+								<div class="spotlight">
+									<div class="content">
+										<header class="major">
+											<h2>Predictive Modeling with Insurance Billing</h2>
+										</header>
+										<p>In this project I practiced using linear regression to predict insurance billing based on 
+											individual's personal data. I used a dataset uploaded to Kaggle by user @teertha.</p>
+										<ul class="actions">
+											<li><a href="insurance.html" class="Main button">View Project</a></li>
+										</ul>
+									</div>
+									<span class="image"><img src="images/pic01.jpg" alt="" /></span>
+								</div>
+							</section>
+
+						<!-- First Section -->
+							<section id="first" class="main special">
+								<header class="major">
+									<h2>Principle Component Analysis</h2>
+								</header>
+								<!-- <ul class="features"> -->
+										<span class="icon major style5 fa-gem"></span>
+										<h2>A study on Principle Component Analysis to address the problem of Dimensionality Reduction</h2>
+										<p>I applied P.C.A to a dataset to practice using this tool to compress data.</p>
+									
+								</ul>
+								<footer class="major">
+									<ul class="actions special">
+										<li><a href="PCA.html" class="button">View Project</a></li>
+									</ul>
+								</footer>
+							</section>
+
+						<!-- Second Section -->
+							<section id="second" class="main special">
+								<header class="major">
+									<h2>Neural Networks</h2>
+									<p>For a machine learning course, I constructed a neural network algorithm to do numerical image recognition.</p>
+								</header>
+								<ul class="statistics">
+								<!--	<li class="style1">
+										<span class="icon solid fa-code-branch"></span>
+										<strong>5,120</strong> Etiam
+									</li>
+									<li class="style2">
+										<span class="icon fa-folder-open"></span>
+										<strong>8,192</strong> Magna
+									</li>
+									<li class="style3">
+										<span class="icon solid fa-signal"></span>
+										<strong>2,048</strong> Tempus
+									</li>
+									<li class="style4">
+										<span class="icon solid fa-laptop"></span>
+										<strong>4,096</strong> Aliquam
+									</li>
+									<li class="style5">
+										<span class="icon fa-gem"></span>
+										<strong>1,024</strong> Nullam
+									</li> -->
+								</ul>
+								<footer class="major">
+									<ul class="actions special">
+										<li><a href="Neural network.html" class="button">View Project</a></li>
+									</ul>
+								</footer>
+							</section>
+
+						<!-- Get Started -->
+							<section id="cta" class="main special">
+								<header class="major">
+									<h2>Predictice Modeling- Logistic Regression</h2>
+									<p>I used logistic regression to compete in Kaggle's Titanic survival prediction competition.<br />
+									I was able to predict survivorship with 80% accuracy.</p>
+								</header>
+								<footer class="major">
+									<ul class="actions special">
+										<li><a href="titanic.html" class="button">View Project</a></li>
+									</ul>
+								</footer>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>About Me</h2>
+							<p>I am a data scientist from Montana with a background in physics and statistics. I am very interested in machine learning and big data analysis. Thanks for taking the time to look at my work. Please reach out if you have any questions for me. </p>
+							<ul class="actions">
+							</ul>
+						</section>
+						<section>
+							<h2>Information</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>Bozeman, MT &bull; USA</dd>
+								<dt>Email</dt>
+								<dd><a href="#">s.nagy.4343@gmail.com</a></dd>
+							</dl>
+							<ul class="icons">
+								<li><a href="https://github.com/SarahMari" class="icon brands fa-github alt"><span class="label">GitHub</span></a></li>
+								<li><a href= "http://linkedin.com/in/sarah-nagy-51412152" class = "icon brands fa-linkedin alt"><span class ="label"><Linkedin</span></a></li>
+							</ul>
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
