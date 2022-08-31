@@ -250,7 +250,6 @@ for t = 1:4
   [m , n] = size(FX_train);
   init_theta = ones(n, 1);
 
-
 [J, grad] = linearRegCostFunction(FX_train, y_train, init_theta, .1);
 [theta] = trainLinearReg( FX_train, y_train, .1);
 pred_train = FX_train * theta;
