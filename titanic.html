@@ -79,16 +79,16 @@ surv.close()
 new.close()
 </pre></code>
 								<h2>Model Building</h2>
-								<p>Now that I had all of the data in a useable form, I looked at missing data and associated statistics. I moved over to RStudio to take advantage of some of its great built in functions. Using the summary function, I found that both age and embarkment location had missing data. I decided to replace the missing age data with the median age- 28 years old. I chose the median because it is more resistant to outliers than mean. I decided to replace missing embarkment location values with the most commonly occuring embarkment location- Southampton. I used the following code to take care of the missing data problem.</p>
+								<p>Now that I had all of the data in a useable form, I looked at missing data and associated statistics. I moved over to RStudio to take advantage of some of its great built in functions. Using the summary function, I found that both age and embarkment location had missing data. I decided to replace the missing age data with the median age- 28 years old. I chose the median because it is more resistant to outliers than mean. I decided to replace missing embarkment location values with the most commonly occurring embarkment location- Southampton. I used the following code to take care of the missing data problem.</p>
 								<pre><code>train$age[is.na(train$age)]<- 28
 train$emb_is_Q[is.na(train$emb_is_Q)] <- 0
 train$emb_is_C[is.na(train$emb_is_C)] <- 0
 train$emb_is_S[is.na(train$emb_is_S)] <- 1</pre></code>
-								<p>I ran R's summary function again for another check and found there was no missing data and that each variable was in a quantitative form. Next I moved over to GNU Octave for the proper anlysis. First, my function loads and stores the data. Then it spilts off the survival data column into a y-vector. Then I apply feature scaling and mean normalization, and randomly group the data into a training set(60%), test set(20%), and cross-validation set(20%). Feature scaling and mean normalization are helpful for training a better model since features with larger scales won't be arbitrarily weighted more heavily. Random assigment to train, test, and cross validation groups allows me to train the model on the training set, optimize some parameters with the test set, and then test those parameters with the cross-validation set.</p>
+								<p>I ran R's summary function again for another check and found there was no missing data and that each variable was in a quantitative form. Next I moved over to GNU Octave for the proper analysis. First, my function loads and stores the data. Then it splits off the survival data column into a y-vector. Then I apply feature scaling and mean normalization, and randomly group the data into a training set(60%), test set(20%), and cross-validation set(20%). Feature scaling and mean normalization are helpful for training a better model since features with larger scales won't be arbitrarily weighted more heavily. Random assignment to train, test, and cross validation groups allows me to train the model on the training set, optimize some parameters with the test set, and then test those parameters with the cross-validation set.</p>
 								<pre><code>
 function [theta accuracy_test] = titanic(file_name)
 
-%The goal of this program is to take the titanic survival data that I pre-processed and find a function that can accruately predict survival on new data.
+%The goal of this program is to take the titanic survival data that I pre-processed and find a function that can accurately predict survival on new data.
 %%% I will do this by training a linear regression algorithm on a training set, using a cross-validation set to optimize the degree of the polynomials and lambda values
 
 %Read and load the data
@@ -196,7 +196,7 @@ l_p(1:15)
 sum(l_p != r_p)
 %accuracy = mean(y_cv == predictions)
 
-%immediately we get an %80 accuracy. Investigate how changing lambda and degree will imrpove it
+%immediately we get an 80% accuracy. Investigate how changing lambda and degree will improve it
 
 %vary the highest polynomial degree with this variable:
 p = 30;
@@ -277,7 +277,7 @@ end
 </pre></code>
 									<p>This model provided a 78% prediction accuracy for the test set. </p>
 									<h2>Conclusion and Next Steps</h2>
-									<p>In order to increase the prediction accuracy, I would like to analyize the model for under or over fitting. The results of this analysis would give information about which methods may help increase accuracy. These steps may include: testing out different strategies with the lambda and polynomial order to get a better fit, removing or adding some features, or simply getting more data. I could run some analysis on the features to see if they overlap significantly in interaction and explanability. If so, I would like to experiment with removing some of those with high interaction. Gathering more data is the least attractive action as it generally requires much more time and effort on behalf of the data science team, so it is much more favorable to explore manipulations within the existing model and data first.</p>
+									<p>In order to increase the prediction accuracy, I would like to analyze the model for under or over fitting. The results of this analysis would give information about which methods may help increase accuracy. These steps may include: testing out different strategies with the lambda and polynomial order to get a better fit, removing or adding some features, or simply getting more data. I could run some analysis on the features to see if they overlap significantly in interaction and explainability. If so, I would like to experiment with removing some of those with high interaction. Gathering more data is the least attractive action as it generally requires much more time and effort on behalf of the data science team, so it is much more favorable to explore manipulations within the existing model and data first.</p>
 							</section>
 
 					</div>
