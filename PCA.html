@@ -76,7 +76,7 @@ ret = sum(sum(S(:,1:k)))/sum(sum(S))
 Z =  X * U_red;
 
 </pre></code>
-								<p>This code allows me to run principlan component analysis while manually inputting the number of features I would like to reduce to. The following image shows me running this from 1 feature up to 11 features.</p>
+								<p>This code allows me to run principal component analysis while manually inputting the number of features I would like to reduce my data down to. The following image shows me running this from 1 feature up to 11 features. The output of each line is the variable retention exressed as a decimal between 0 and 1.</p>
 								<body><img src="PCA.png" alt="Test Image" width = 890/></body>
 								<p>These results show that we can reduce down from the original 13 input features to 9 input features while retaining 95% of the variability. We can reduce down to 11 while retaining a whole 99%. In short, after this analysis, we are now armed to make an educated decision between greater reduction of features versus retaintion of variabilty of the data. Whether we decide to reduce just to 11, or down to 9 would depend on our goals and next steps with this project. </p>
 							</section>
