@@ -33,13 +33,22 @@
 								<!-- <span class="image main"><img src="images/pic04.jpg" alt="" /></span> -->
 								<h2>Background and Goals</h2>
 								<p>First I took a look at the general information surrounding the data.
-                <p>I used the following code for this step:</p>
+            							<p>I used the following code for this step:</p>
 								<pre><code>pd.options.display.max_columns = None
 df = pd.read_csv("emissions_high_granularity.csv") 
 print(df.head()) 
 </pre></code>
 								<img src="images/data_head.png">
-					
+								<p>Next I did some univariate analysis to see what I am working with, starting with "Year" variable.</p>
+								<pre><code>years = df['year']
+plt.figure()
+plt.hist(years, bins = 1000, color='brown') 
+plt.title('Year Data Distribution') 
+plt.xlabel('Year') 
+plt.ylabel('Count') 
+plt.show()
+								</pre></code>
+								<img src="images/year.png">
 						
 							</section>
 
