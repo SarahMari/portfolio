@@ -49,7 +49,27 @@ plt.ylabel('Count')
 plt.show()
 								</pre></code>
 								<img src="images/year.png">
-						
+								<p>Then I looked at the different emission types.</p>
+								<pre><code>years = df['year']
+tot_product = df['product_emissions_MtCO2'].sum()
+tot_flaring = df['flaring_emissions_MtCO2'].sum()
+tot_venting = df['venting_emissions_MtCO2'].sum()
+tot_own_fuel = df['own_fuel_use_emissions_MtCO2'].sum()
+tot_fugitive = df['fugitive_methane_emissions_MtCO2e'].sum()
+tot_oper = df['total_operational_emissions_MtCO2e'].sum()
+
+emissions = [tot_product, tot_flaring, tot_venting, tot_own_fuel, tot_fugitive, tot_oper]
+labels = ['Product', 'Flaring', 'Venting', 'Own Fuel Use', 'Fugitive Methane', 'Total Operational']
+color = ['lightblue', 'blue', 'purple', 'red', 'black','pink']
+fig, ax = plt.subplots()
+ax.bar(labels, emissions, color = color)
+plt.xlabel('Emissions Type') 
+plt.ylabel('Amount (PPM)')
+plt.title('Emissions Sorted by Emission Type')
+plt.tight_layout()
+plt.show()
+								</pre></code>
+								<img src="images/emission_type.png">
 							</section>
 
 					</div>
